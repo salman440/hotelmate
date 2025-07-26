@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888392658699",
+    "project_id": "hotelmatenox",
+    "storage_bucket": "hotelmatenox.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888392658699:android:013c15b8ed5e159a287c0e",
+        "android_client_info": {
+          "package_name": "com.systemnoxltd.hotelmatenox"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL6CcNzbNtV_RQmOqEBGBNxzrentlpmTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

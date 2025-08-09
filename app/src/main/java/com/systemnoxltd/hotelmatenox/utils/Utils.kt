@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun Context.findActivity(): Activity {
     var context = this
@@ -34,4 +37,9 @@ fun openPlayStore(context: Context) {
             )
         )
     }
+}
+
+fun formatMillisToDate(millis: Long): String {
+    val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    return sdf.format(Date(millis))
 }

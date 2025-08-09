@@ -63,6 +63,15 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Full Name Field
+        OutlinedTextField(
+            value = state.fullName,
+            onValueChange = viewModel::onFullNameChanged,
+            label = { Text("Full Name") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         // Email Field
         OutlinedTextField(
             value = state.email,
@@ -70,6 +79,17 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
             label = { Text("Email") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Phone no Field
+        OutlinedTextField(
+            value = state.phoneNo,
+            onValueChange = viewModel::onPhoneNoChanged,
+            label = { Text("Phone No") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.height(12.dp))

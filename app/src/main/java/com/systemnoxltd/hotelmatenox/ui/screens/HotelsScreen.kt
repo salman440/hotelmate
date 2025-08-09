@@ -1,10 +1,14 @@
 package com.systemnoxltd.hotelmatenox.ui.screens
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.systemnoxltd.hotelmatenox.ui.components.HotelCard
@@ -22,10 +26,8 @@ fun HotelsScreen(
         viewModel.loadHotels()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Your Hotels") })
-        },
+    Scaffold(modifier = Modifier.fillMaxHeight()
+        .background(Color.White),
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 navController.navigate("add_hotel")

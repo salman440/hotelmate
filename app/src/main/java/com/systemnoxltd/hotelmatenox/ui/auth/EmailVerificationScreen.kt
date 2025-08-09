@@ -81,11 +81,15 @@ fun EmailVerificationScreen(
             onClick = {
                 user?.reload()?.addOnCompleteListener {
                     if (user.isEmailVerified) {
-                        navController.navigate("home") {
+                        navController.navigate("agent_home") {
                             popUpTo("email_verification") { inclusive = true }
                         }
                     } else {
+                        FirebaseAuth.getInstance().signOut()
                         Toast.makeText(context, "Email not verified yet.", Toast.LENGTH_SHORT).show()
+                        navController.navigate("login") {
+                            popUpTo("email_verification") { inclusive = true }
+                        }
                     }
                 }
             }

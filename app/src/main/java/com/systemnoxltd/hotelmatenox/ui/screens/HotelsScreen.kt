@@ -18,7 +18,8 @@ import com.systemnoxltd.hotelmatenox.viewmodel.HotelViewModel
 @Composable
 fun HotelsScreen(
     navController: NavHostController,
-    viewModel: HotelViewModel = viewModel()
+    viewModel: HotelViewModel = viewModel(),
+    navigateWithInterstitial: (String) -> Unit
 ) {
     val hotels by viewModel.hotels.collectAsState()
 
@@ -30,7 +31,8 @@ fun HotelsScreen(
         .background(Color.White),
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate("add_hotel")
+//                navController.navigate("add_hotel")
+                navigateWithInterstitial("add_hotel")
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Hotel")
             }

@@ -66,7 +66,6 @@ fun CustomerFormScreen(
     var hotelError by remember { mutableStateOf(false) }
     var clientError by remember { mutableStateOf(false) }
 
-
     val context = LocalContext.current
     val dateFormatter = remember { SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()) }
 
@@ -121,10 +120,8 @@ fun CustomerFormScreen(
         }
     }
 
-
 //    fetching list of hotels and clients
     LaunchedEffect(agentId) {
-
 
         try {
             val hotelsSnapshot =
@@ -156,10 +153,11 @@ fun CustomerFormScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(if (isEdit) "Edit Customer" else "Add Customer") })
-        }) { padding ->
+//        topBar = {
+//            TopAppBar(
+//                title = { Text(if (isEdit) "Edit Customer" else "Add Customer") })
+//        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -399,9 +397,9 @@ fun CustomerFormScreen(
                         } else {
                             viewModel.updateCustomer(customer)
                             navController.previousBackStackEntry?.savedStateHandle?.set(
-                                    "refresh_customers",
-                                    true
-                                )
+                                "refresh_customers",
+                                true
+                            )
                             Toast.makeText(
                                 context, "Customer updated successfully", Toast.LENGTH_SHORT
                             ).show()

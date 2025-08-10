@@ -60,10 +60,18 @@ fun EmailVerificationScreen(
                 isLoading = true
                 user?.sendEmailVerification()
                     ?.addOnSuccessListener {
-                        Toast.makeText(context, "Verification email sent again.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Verification email sent again.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     ?.addOnFailureListener {
-                        Toast.makeText(context, "Failed to send email: ${it.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Failed to send email: ${it.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     ?.addOnCompleteListener {
                         isLoading = false
@@ -71,7 +79,10 @@ fun EmailVerificationScreen(
             },
             enabled = !isLoading
         ) {
-            if (isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+            if (isLoading) CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp
+            )
             else Text("Resend Email")
         }
 
@@ -87,8 +98,11 @@ fun EmailVerificationScreen(
                     } else {
                         FirebaseAuth.getInstance().signOut()
                         Toast.makeText(context, "Email not verified yet.", Toast.LENGTH_SHORT).show()
+
                         navController.navigate("login") {
-                            popUpTo("email_verification") { inclusive = true }
+        //                    popUpTo("email_verification") { inclusive = true }
+                            popUpTo("login") { inclusive = false }
+                            launchSingleTop = true
                         }
                     }
                 }

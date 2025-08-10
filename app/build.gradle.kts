@@ -74,4 +74,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.runtime.livedata)
 
+//    admob
+    implementation(libs.play.services.ads)
+
+
 }

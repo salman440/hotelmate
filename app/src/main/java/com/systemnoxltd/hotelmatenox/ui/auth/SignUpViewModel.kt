@@ -93,7 +93,8 @@ class SignUpViewModel : ViewModel() {
                     val profile = mapOf(
                         "name" to name,
                         "email" to email,
-                        "phone" to phone
+                        "phone" to phone,
+                        "showAds" to true
                     )
                     FirebaseFirestore.getInstance()
                         .collection("users")

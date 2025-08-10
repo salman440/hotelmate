@@ -89,9 +89,12 @@ fun ForgotPasswordScreen(
             text = "Back to Login",
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
-                navController.navigate("login") {
-                    popUpTo("forgot_password") { inclusive = true }
-                }
+                navController.popBackStack()
+//                navController.navigate("login") {
+////                    popUpTo("forgot_password") { inclusive = true }
+//                    popUpTo("login") { inclusive = false }
+//                    launchSingleTop = true
+//                }
             }
         )
     }

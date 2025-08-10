@@ -177,9 +177,10 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
                 text = "Login",
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable {
-                    navController.navigate("login") {
-                        popUpTo("signup") { inclusive = true }
-                    }
+                    navController.popBackStack()
+//                    navController.navigate("login") {
+//                        popUpTo("signup") { inclusive = true }
+//                    }
                 }
             )
         }

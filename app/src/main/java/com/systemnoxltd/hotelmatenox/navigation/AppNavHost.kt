@@ -25,7 +25,8 @@ fun AppNavHost(
     navController: NavHostController,
     agentId: String,
     startDestination: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateWithInterstitial: (String) -> Unit = { dest -> navController.navigate(dest) }
 ) {
     NavHost(
         navController = navController, startDestination = startDestination, modifier = modifier
@@ -39,13 +40,13 @@ fun AppNavHost(
 
         // Main tabs
         composable(BottomNavItem.Home.route) {
-            AgentHomeScreen(navController, agentId = agentId)
+            AgentHomeScreen(navController, agentId = agentId, navigateWithInterstitial = navigateWithInterstitial)
         }
         composable(BottomNavItem.Clients.route) {
-            ClientsScreen(navController)
+            ClientsScreen(navController, navigateWithInterstitial = navigateWithInterstitial)
         }
         composable(BottomNavItem.Hotels.route) {
-            HotelsScreen(navController)
+            HotelsScreen(navController, navigateWithInterstitial = navigateWithInterstitial)
         }
 
         // Extra screens

@@ -43,13 +43,13 @@ fun AddOrEditHotelScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(if (isEdit) "Edit Hotel" else "Add Hotel") })
-        }
+//        topBar = {
+//            TopAppBar(title = { Text(if (isEdit) "Edit Hotel" else "Add Hotel") })
+//        }
     ) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+//                .padding(padding)
                 .padding(16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Top

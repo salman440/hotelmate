@@ -49,16 +49,16 @@ fun ProfileScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("User Profile") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = { Text("User Profile") },
+//                navigationIcon = {
+//                    IconButton(onClick = { navController.popBackStack() }) {
+//                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+//                    }
+//                }
+//            )
+//        }
     ) { innerPadding ->
         when {
             viewModel.isLoading -> {
@@ -75,7 +75,7 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text("Error: ${viewModel.errorMessage}")
@@ -84,7 +84,7 @@ fun ProfileScreen(
             viewModel.userProfile != null -> {
                 Column(
                     modifier = Modifier
-                        .padding(innerPadding)
+//                        .padding(innerPadding)
                         .fillMaxSize()
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)

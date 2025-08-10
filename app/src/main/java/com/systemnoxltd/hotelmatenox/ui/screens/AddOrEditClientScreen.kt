@@ -48,15 +48,15 @@ fun AddOrEditClientScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(if (isEdit) "Edit Client" else "Add Client") }
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = { Text(if (isEdit) "Edit Client" else "Add Client") }
+//            )
+//        }
     ) { padding ->
         Column(
             modifier = Modifier
-                .padding(padding)
+//                .padding(padding)
                 .padding(16.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Top

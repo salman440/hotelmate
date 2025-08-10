@@ -53,7 +53,8 @@ import com.systemnoxltd.hotelmatenox.viewmodel.CustomerViewModel
 fun AgentHomeScreen(
     navController: NavHostController,
     agentId: String,
-    viewModel: CustomerViewModel = viewModel()
+    viewModel: CustomerViewModel = viewModel(),
+    navigateWithInterstitial: (String) -> Unit
 ) {
     val context = LocalContext.current
     val packageName = context.packageName
@@ -95,7 +96,8 @@ fun AgentHomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate("add_customer")
+//                navController.navigate("add_customer")
+                navigateWithInterstitial("add_customer")
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }

@@ -20,7 +20,8 @@ import com.systemnoxltd.hotelmatenox.viewmodel.ClientsViewModel
 @Composable
 fun ClientsScreen(
     navController: NavHostController,
-    viewModel: ClientsViewModel = viewModel()
+    viewModel: ClientsViewModel = viewModel(),
+    navigateWithInterstitial: (String) -> Unit
 ) {
     val clients by viewModel.clients.collectAsState()
 
@@ -32,7 +33,8 @@ fun ClientsScreen(
         .background(Color.White),
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate("add_client")
+//                navController.navigate("add_client")
+                navigateWithInterstitial("add_client")
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Client")
             }

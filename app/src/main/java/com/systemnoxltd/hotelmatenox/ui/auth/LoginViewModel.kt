@@ -1,7 +1,6 @@
-package com.systemnoxltd.hotelmate.ui.auth
+package com.systemnoxltd.hotelmatenox.ui.auth
 
-import android.util.Log
-import android.widget.Toast
+import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,7 +32,7 @@ class LoginViewModel : ViewModel() {
         val email = _uiState.value.email.trim()
         val password = _uiState.value.password.trim()
 
-        if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onError("Please enter a valid email.")
             return
         }

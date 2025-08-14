@@ -40,13 +40,14 @@ fun ClientsScreen(
             }
         }
     ) { padding ->
-        LazyColumn(contentPadding = padding) {
+        LazyColumn {
             items(clients.size) { index ->
                 val client = clients[index]
                 ClientCard(
                     client = client,
                     onEdit = {
-                        navController.navigate("edit_client/${client.id}")
+//                        navController.navigate("edit_client/${client.id}")
+                        navigateWithInterstitial("edit_client/${client.id}")
                     },
                     onDelete = {
                         viewModel.deleteClient(client.id)

@@ -24,13 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.firebase.firestore.FirebaseFirestore
-import com.systemnoxltd.hotelmate.utils.formatMillisToDate
+import com.systemnoxltd.hotelmatenox.utils.formatMillisToDate
 import com.systemnoxltd.hotelmatenox.model.Client
 import com.systemnoxltd.hotelmatenox.model.Customer
 import com.systemnoxltd.hotelmatenox.model.Hotel
+import com.systemnoxltd.hotelmatenox.ui.components.DropdownSelector
 import com.systemnoxltd.hotelmatenox.viewmodel.CustomerViewModel
 import kotlinx.coroutines.tasks.await
-import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,13 +48,21 @@ fun CustomerFormScreen(
     var voucherNo by remember { mutableStateOf(customerToEdit?.voucherNo ?: "") }
     var customerName by remember { mutableStateOf(customerToEdit?.customerName ?: "") }
     var customerPhone by remember { mutableStateOf(customerToEdit?.customerPhone ?: "") }
+    var checkInMillis by remember { mutableStateOf(customerToEdit?.checkInDate ?: 0L) }
+    var checkOutMillis by remember { mutableStateOf(customerToEdit?.checkOutDate ?: 0L) }
     var roomType by remember { mutableStateOf(customerToEdit?.roomType ?: "Sharing") }
     var totalRoom by remember { mutableStateOf(customerToEdit?.totalRooms?.toString() ?: "") }
     var rentPerNight by remember { mutableStateOf(customerToEdit?.rentPerNight?.toString() ?: "") }
+    var hotelId by remember { mutableStateOf(customerToEdit?.hotelId ?: "") }
     var hotelName by remember { mutableStateOf(customerToEdit?.hotelName ?: "") }
+    var status by remember { mutableStateOf(customerToEdit?.status ?: "Pending") }
+    var clientId by remember { mutableStateOf(customerToEdit?.clientId ?: "") }
     var client by remember { mutableStateOf(customerToEdit?.client ?: "") }
-    var hotels by remember { mutableStateOf<List<String>>(emptyList()) }
-    var clients by remember { mutableStateOf<List<String>>(emptyList()) }
+    var hotels by remember { mutableStateOf<List<Hotel>>(emptyList()) }
+    var clients by remember { mutableStateOf<List<Client>>(emptyList()) }
+    var statusList by remember { mutableStateOf(listOf("Pending", "Paid")) }
+    var selectedHotel by remember { mutableStateOf<Hotel?>(null) }
+    var selectedClient by remember { mutableStateOf<Client?>(null) }
 
     var voucherNoError by remember { mutableStateOf(false) }
     var customerNameError by remember { mutableStateOf(false) }
@@ -65,24 +73,10 @@ fun CustomerFormScreen(
     var checkOutError by remember { mutableStateOf(false) }
     var hotelError by remember { mutableStateOf(false) }
     var clientError by remember { mutableStateOf(false) }
+    var statusError by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    val dateFormatter = remember { SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()) }
-
-    var checkInMillis by remember {
-        mutableStateOf(customerToEdit?.checkInDate?.let {
-            dateFormatter.parse(
-                it
-            )?.time
-        } ?: 0L)
-    }
-    var checkOutMillis by remember {
-        mutableStateOf(customerToEdit?.checkOutDate?.let {
-            dateFormatter.parse(
-                it
-            )?.time
-        } ?: 0L)
-    }
+//    val dateFormatter = remember { SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()) }
     var nights by remember { mutableStateOf(0) }
 
     LaunchedEffect(checkInMillis, checkOutMillis) {
@@ -108,14 +102,15 @@ fun CustomerFormScreen(
                 roomType = it.roomType
                 totalRoom = it.totalRooms.toString()
                 rentPerNight = it.rentPerNight.toString()
+                hotelId = it.hotelId
                 hotelName = it.hotelName
+                clientId = it.clientId
                 client = it.client
-                checkInMillis =
-                    SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(it.checkInDate)?.time
-                        ?: 0
-                checkOutMillis =
-                    SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).parse(it.checkOutDate)?.time
-                        ?: 0
+                status = it.status
+                checkInMillis = it.checkInDate
+                checkOutMillis = it.checkOutDate
+                selectedHotel = Hotel(id = hotelId, name = hotelName)
+                selectedClient = Client(id = clientId, clientName = client)
             }
         }
     }
@@ -129,7 +124,8 @@ fun CustomerFormScreen(
             val hotelsList = hotelsSnapshot.documents.mapNotNull { doc ->
                 doc.toObject(Hotel::class.java)
             }
-            hotels = hotelsList.map { it.name }
+//            hotels = hotelsList.map { it.name }
+            hotels = hotelsList
 
             val clientsSnapshot =
                 firestore.collection("agents").document(agentId).collection("clients").get().await()
@@ -137,7 +133,8 @@ fun CustomerFormScreen(
             val clientsList = clientsSnapshot.documents.mapNotNull { doc ->
                 doc.toObject(Client::class.java)
             }
-            clients = clientsList.map { it.clientName }
+//            clients = clientsList.map { it.clientName }
+            clients = clientsList
         } catch (e: Exception) {
             e.printStackTrace()
             // Optionally show error via Snackbar/Toast
@@ -321,9 +318,6 @@ fun CustomerFormScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
 
-//            Text("Total Nights: $totalNights")
-//            Text("Total Amount: $totalAmount")
-
             // Total Nights & Total Amount Cards
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -341,17 +335,47 @@ fun CustomerFormScreen(
                 )
             }
 
-            DropdownSelector("Select Hotel", hotelName, hotels) {
-                hotelName = it
-                hotelError = it.isBlank()
-            }
+//            DropdownSelector("Select Hotel", hotelName, hotels) {
+//                hotelName = it
+//                hotelError = it.isBlank()
+//            }
+
+            DropdownSelector(
+                label = "Select Hotel",
+                selected = selectedHotel,
+                options = hotels,
+                onSelected = {
+                    selectedHotel = it
+                    hotelName = it.name
+                    hotelId = it.id
+                    Log.e("hotelId", "CustomerFormScreen: hId: ${it}" )
+                },
+                labelForOption = { it.name } // show hotel name
+            )
             if (hotelError) Text("Please select a hotel", color = MaterialTheme.colorScheme.error)
-            DropdownSelector("Select Client", client, clients) {
-                client = it
-                clientError = it.isBlank()
-            }
+//            DropdownSelector("Select Client", client, clients) {
+//                client = it
+//                clientError = it.isBlank()
+//            }
+            DropdownSelector(
+                label = "Select Client",
+                selected = selectedClient,
+                options = clients,
+                onSelected = {
+                    selectedClient = it
+                    clientId = it.id
+                    client = it.clientName
+                    Log.e("clientId", "CustomerFormScreen: cId: ${it}" )
+                },
+                labelForOption = { it.clientName } // show client name
+            )
             if (clientError) Text("Please select a client", color = MaterialTheme.colorScheme.error)
 
+            DropdownSelectorStatus("Select Status", status, statusList) {
+                status = it
+                statusError = it.isBlank()
+            }
+            if (statusError) Text("Please select a status", color = MaterialTheme.colorScheme.error)
             Button(
                 onClick = {
 
@@ -374,21 +398,24 @@ fun CustomerFormScreen(
                     }
 
                     val customer = Customer(
-                        id = id ?: "",
+                        id = id,
                         voucherNo = voucherNo,
                         customerName = customerName,
                         customerPhone = customerPhone,
-                        checkInDate = formatMillisToDate(checkInMillis),
-                        checkOutDate = formatMillisToDate(checkOutMillis),
+                        checkInDate = checkInMillis,
+                        checkOutDate = checkOutMillis,
                         roomType = roomType,
                         totalRooms = totalRoom.toIntOrNull() ?: 0,
                         nights = nights,
                         rentPerNight = rentPerNight.toDoubleOrNull() ?: 0.0,
                         totalNights = totalNights,
                         totalAmount = totalAmount,
+                        hotelId = hotelId,
                         hotelName = hotelName,
+                        clientId = clientId,
                         client = client,
-                        agentId = agentId
+                        agentId = agentId,
+                        status = status
                     )
 
                     if (isEdit) {
@@ -444,7 +471,7 @@ fun InfoCard(icon: ImageVector, title: String, value: String, iconColor: Color) 
 }
 
 @Composable
-fun DropdownSelector(
+fun DropdownSelectorStatus(
     label: String, selected: String, options: List<String>, onSelected: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }

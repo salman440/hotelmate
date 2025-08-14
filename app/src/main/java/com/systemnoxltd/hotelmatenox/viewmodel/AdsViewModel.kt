@@ -1,34 +1,4 @@
 package com.systemnoxltd.hotelmatenox.viewmodel
-//
-//import androidx.lifecycle.ViewModel
-//import com.google.firebase.auth.FirebaseAuth
-//import com.google.firebase.firestore.FirebaseFirestore
-//import kotlinx.coroutines.flow.MutableStateFlow
-//import kotlinx.coroutines.flow.StateFlow
-//
-//class AdsViewModel : ViewModel() {
-//    private val _showAds = MutableStateFlow(false)
-//    val showAds: StateFlow<Boolean> = _showAds
-//
-//    init {
-//        fetchAdsFlag()
-//    }
-//
-//    private fun fetchAdsFlag() {
-//        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
-//        FirebaseFirestore.getInstance()
-//            .collection("users")
-//            .document(uid)
-//            .addSnapshotListener { snapshot, error ->
-//                if (error != null) return@addSnapshotListener
-//                if (snapshot != null && snapshot.exists()) {
-//                    _showAds.value = snapshot.getBoolean("showAds") ?: true
-//                }
-//            }
-//    }
-//}
-
-
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

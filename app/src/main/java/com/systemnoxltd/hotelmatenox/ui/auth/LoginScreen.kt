@@ -1,6 +1,5 @@
-package com.systemnoxltd.hotelmate.ui.auth
+package com.systemnoxltd.hotelmatenox.ui.auth
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

@@ -1,11 +1,13 @@
 package com.systemnoxltd.hotelmatenox
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import android.view.WindowInsetsController
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -21,26 +23,32 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.systemnoxltd.hotelmate.navigation.AppNavHost
-import com.systemnoxltd.hotelmate.utils.openPlayStore
+import com.systemnoxltd.hotelmatenox.navigation.AppNavHost
+import com.systemnoxltd.hotelmatenox.utils.openPlayStore
 import com.systemnoxltd.hotelmatenox.ads.InterstitialAdManager
 import com.systemnoxltd.hotelmatenox.navigation.BottomNavItem
 import com.systemnoxltd.hotelmatenox.ui.components.BannerAdView
@@ -48,7 +56,8 @@ import com.systemnoxltd.hotelmatenox.ui.theme.HotelMateNoxTheme
 import com.systemnoxltd.hotelmatenox.viewmodel.AdsViewModel
 import kotlinx.coroutines.flow.collectLatest
 
-class MainActivity : ComponentActivity() {
+//class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var adsViewModel: AdsViewModel
     private lateinit var interstitialManager: InterstitialAdManager
@@ -56,6 +65,8 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Draw behind system bars
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)
 
@@ -79,12 +90,29 @@ class MainActivity : ComponentActivity() {
         setContent {
             HotelMateNoxTheme {
                 val navController = rememberNavController()
+
+                val statusBarColor = MaterialTheme.colorScheme.primary
+
+                // Change status bar color & icon color
+                LaunchedEffect(statusBarColor) {
+                    window.statusBarColor = statusBarColor.toArgb()
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        window.insetsController?.setSystemBarsAppearance(
+                            0, // 0 = disable light icons → icons are white
+                            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                        )
+                    } else {
+                        @Suppress("DEPRECATION")
+                        window.decorView.systemUiVisibility = 0 // clear LIGHT_STATUS_BAR flag
+                    }
+                }
+
                 val showAds by adsViewModel.showAds.collectAsState()
                 val context = LocalContext.current
                 val activity = LocalActivity.current
                 val packageName = context.packageName
                 val appLink = "https://play.google.com/store/apps/details?id=$packageName"
-                var menuExpanded by remember { mutableStateOf(false) }
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val agentId = currentUser?.uid ?: ""
 
@@ -101,11 +129,12 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                val startDestination = if (currentUser != null && currentUser.isEmailVerified) {
-                    BottomNavItem.Home.route
-                } else {
-                    "splash"
-                }
+//                val startDestination = if (currentUser != null && currentUser.isEmailVerified) {
+//                    BottomNavItem.Home.route
+//                } else {
+//                    "splash"
+//                }
+                val startDestination = "splash"
 
                 val bottomNavItems = listOf(
                     BottomNavItem.Home,
@@ -148,6 +177,7 @@ class MainActivity : ComponentActivity() {
                     "edit_client/{id}" -> "Edit Client"
                     "add_hotel" -> "Add Hotel"
                     "edit_hotel/{id}" -> "Edit Hotel"
+                    "payments_screen/{clientId}" -> "Payments"
                     else -> "HotelMate" // default
                 }
 
@@ -158,13 +188,25 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         if (showTopBar) {
                             TopAppBar(
-                                title = { Text(title) },
+                                title = {
+                                    Text(
+                                        title,
+                                        color = Color.White
+                                    )
+                                },
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    titleContentColor = Color.White, // Optional, ensures title text color
+                                    navigationIconContentColor = Color.White, // Optional, ensures icon color
+                                    actionIconContentColor = Color.White // For action icons if any
+                                ),
                                 navigationIcon = {
                                     if (showBackArrow) {
                                         IconButton(onClick = { navController.popBackStack() }) {
                                             Icon(
                                                 Icons.Default.ArrowBackIosNew,
-                                                contentDescription = "Back"
+                                                contentDescription = "Back",
+                                                tint = Color.White
                                             )
                                         }
                                     }
@@ -190,14 +232,13 @@ class MainActivity : ComponentActivity() {
                                                     navigateWithInterstitial("profile")
                                                 }
                                             )
-                                            DropdownMenuItem(
-                                                text = { Text("Help") },
-                                                onClick = {
-                                                    menuExpanded = false
-//                                                    navController.navigate("help")
-                                                    navigateWithInterstitial("help")
-                                                }
-                                            )
+//                                            DropdownMenuItem(
+//                                                text = { Text("Help") },
+//                                                onClick = {
+//                                                    menuExpanded = false
+//                                                    navigateWithInterstitial("help")
+//                                                }
+//                                            )
                                             DropdownMenuItem(
                                                 text = { Text("Share") },
                                                 onClick = {
@@ -247,15 +288,16 @@ class MainActivity : ComponentActivity() {
 //                                .padding(WindowInsets.navigationBars.asPaddingValues())
                         ) {
                             if (showAds && currentRoute !in authScreens) {
-                                BannerAdView(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
+                                BannerAdView(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
 
-                                    .then(
-                                        if (currentRoute !in bottomNavItems.map { it.route })
-                                            Modifier.padding(WindowInsets.navigationBars.asPaddingValues())
-                                        else Modifier
-                                    )
+                                        .then(
+                                            if (currentRoute !in bottomNavItems.map { it.route })
+                                                Modifier.padding(WindowInsets.navigationBars.asPaddingValues())
+                                            else Modifier
+                                        )
                                 )
                             }
                             if (currentRoute in bottomNavItems.map { it.route }) {
@@ -268,7 +310,7 @@ class MainActivity : ComponentActivity() {
                                                     contentDescription = item.label
                                                 )
                                             },
-                                        label = { Text(item.label) },
+                                            label = { Text(item.label) },
                                             selected = currentRoute == item.route,
                                             onClick = {
                                                 navController.navigate(item.route) {

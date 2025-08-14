@@ -1,6 +1,5 @@
-package com.systemnoxltd.hotelmate.ui.screens
+package com.systemnoxltd.hotelmatenox.ui.screens
 
-import android.util.Log
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -16,7 +15,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.firebase.auth.FirebaseAuth
 import com.systemnoxltd.hotelmatenox.R
-import com.systemnoxltd.hotelmate.utils.findActivity
+import com.systemnoxltd.hotelmatenox.utils.findActivity
 import kotlinx.coroutines.delay
 
 @Composable
@@ -25,28 +24,31 @@ fun SplashScreen(navController: NavHostController) {
     val firebaseAuth = FirebaseAuth.getInstance()
     val currentUser = firebaseAuth.currentUser
 
-    val appUpdateManager = remember { AppUpdateManagerFactory.create(context) }
-
     var forceUpdate by remember { mutableStateOf(false) }
     var checkedUpdate by remember { mutableStateOf(false) }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "logo_anim")
+    // Animation: smooth up and down
+    val infiniteTransition = rememberInfiniteTransition()
     val offsetY by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = -20f,
         animationSpec = infiniteRepeatable(
-            animation = tween(800, easing = LinearEasing),
+            animation = tween(
+                durationMillis = 1000,
+                easing = FastOutSlowInEasing
+            ),
             repeatMode = RepeatMode.Reverse
-        ),
-        label = "offset_anim"
+        )
     )
 
+    // Launch update check separately
     LaunchedEffect(Unit) {
+        val appUpdateManager = AppUpdateManagerFactory.create(context)
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
         appUpdateInfoTask.addOnSuccessListener { info ->
-            val updateAvailable = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                    info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-
+            val updateAvailable =
+                info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                        info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
             if (updateAvailable) {
                 forceUpdate = true
                 try {
@@ -56,36 +58,22 @@ fun SplashScreen(navController: NavHostController) {
                         context.findActivity(),
                         100
                     )
-                } catch (e: Exception) {
-                    Log.e("SplashScreen", "Update failed: ${e.localizedMessage}")
-                }
+                } catch (_: Exception) {}
             } else {
                 checkedUpdate = true
             }
-        }.addOnFailureListener {
-            checkedUpdate = true
-        }
+        }.addOnFailureListener { checkedUpdate = true }
     }
 
+    // Navigate after delay if no update
     if (!forceUpdate && checkedUpdate) {
         LaunchedEffect(Unit) {
             delay(2000)
-
             if (currentUser != null && currentUser.isEmailVerified) {
-                // User is logged in and email is verified
-                navController.navigate("agent_home") {
-                    popUpTo("splash") { inclusive = true }
-                }
+                navController.navigate("agent_home") { popUpTo("splash") { inclusive = true } }
             } else {
-                // User not logged in or not verified
-                navController.navigate("login") {
-                    popUpTo("splash") { inclusive = true }
-                }
+                navController.navigate("login") { popUpTo("splash") { inclusive = true } }
             }
-
-//            navController.navigate("login") {
-//                popUpTo("splash") { inclusive = true }
-//            }
         }
     }
 
@@ -94,9 +82,11 @@ fun SplashScreen(navController: NavHostController) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_logo),
+            painter = painterResource(id = R.drawable.ic_hotel_mate),
             contentDescription = "Logo",
-            modifier = Modifier.offset(y = offsetY.dp)
+            modifier = Modifier
+                .offset(y = offsetY.dp)
+                .size(120.dp) // ensure reasonable size for performance
         )
     }
 }

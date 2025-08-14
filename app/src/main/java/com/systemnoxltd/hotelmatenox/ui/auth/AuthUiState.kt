@@ -1,4 +1,4 @@
-package com.systemnoxltd.hotelmate.ui.auth
+package com.systemnoxltd.hotelmatenox.ui.auth
 
 data class AuthUiState(
     val email: String = "",

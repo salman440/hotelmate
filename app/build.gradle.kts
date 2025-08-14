@@ -50,6 +50,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    // ✅ Add Compose Material (for SwipeToDismiss APIs)
+    implementation(libs.androidx.material)
+
+    // ✅ Icons (now BOM-managed)
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
 //    implementation(libs.firebase.auth)
 //    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
@@ -60,8 +66,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.material.icons.core)
-    implementation(libs.material.icons.extended)
+//    implementation(libs.material.icons.core)
+//    implementation(libs.material.icons.extended)
 
     implementation(libs.playAppUpdate)
     implementation(libs.navigation.compose)
@@ -76,6 +82,8 @@ dependencies {
 
 //    admob
     implementation(libs.play.services.ads)
+
+    implementation(libs.material)
 
 
 }

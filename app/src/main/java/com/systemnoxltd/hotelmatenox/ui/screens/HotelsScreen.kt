@@ -38,13 +38,14 @@ fun HotelsScreen(
             }
         }
     ) { padding ->
-        LazyColumn(contentPadding = padding) {
+        LazyColumn {
             items(hotels.size) { index ->
                 val hotel = hotels[index]
                 HotelCard(
                     hotel = hotel,
                     onEdit = {
-                        navController.navigate("edit_hotel/${hotel.id}")
+//                        navController.navigate("edit_hotel/${hotel.id}")
+                        navigateWithInterstitial("edit_hotel/${hotel.id}")
                     },
                     onDelete = {
                         viewModel.deleteHotel(hotel.id)

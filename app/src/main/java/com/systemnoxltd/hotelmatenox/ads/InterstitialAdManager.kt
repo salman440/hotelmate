@@ -47,6 +47,8 @@ class InterstitialAdManager(private val context: Context) {
             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                 interstitialAd = null
                 onComplete()
+                // reload for next time
+                load(AdUnits.INTERSTITIAL)
             }
         }
         ad.show(activity)

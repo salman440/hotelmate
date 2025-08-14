@@ -1,6 +1,5 @@
 package com.systemnoxltd.hotelmatenox.ui.screens
 
-import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,20 +13,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,10 +36,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.firebase.auth.FirebaseAuth
-import com.systemnoxltd.hotelmate.utils.openPlayStore
+import com.systemnoxltd.hotelmatenox.utils.getFirstDayOfCurrentMonth
+import com.systemnoxltd.hotelmatenox.utils.getLastDayOfCurrentMonth
 import com.systemnoxltd.hotelmatenox.ui.components.CustomerCard
+import com.systemnoxltd.hotelmatenox.ui.components.DateRangeChipWithReset
+import com.systemnoxltd.hotelmatenox.ui.components.PaymentsCard
 import com.systemnoxltd.hotelmatenox.viewmodel.CustomerViewModel
+import com.systemnoxltd.hotelmatenox.viewmodel.PaymentsViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,11 +51,15 @@ fun AgentHomeScreen(
     navController: NavHostController,
     agentId: String,
     viewModel: CustomerViewModel = viewModel(),
+    paymentsViewModel: PaymentsViewModel = viewModel(),
     navigateWithInterstitial: (String) -> Unit
 ) {
     val context = LocalContext.current
     val packageName = context.packageName
     val appLink = "https://play.google.com/store/apps/details?id=$packageName"
+
+    var startDate by remember { mutableStateOf(getFirstDayOfCurrentMonth()) }
+    var endDate by remember { mutableStateOf(getLastDayOfCurrentMonth()) }
 
     val customers by viewModel.customers.collectAsState()
     val clients by viewModel.clients.collectAsState()
@@ -66,15 +67,31 @@ fun AgentHomeScreen(
     var selectedClient by remember { mutableStateOf("") }
     var menuExpanded by remember { mutableStateOf(false) }
 
+
+    val pending by paymentsViewModel.pendingAmount.collectAsState()
+    val received by paymentsViewModel.receivedAmount.collectAsState()
+
+    LaunchedEffect(selectedClient) {
+        if (selectedClient.isNotEmpty()) {
+//            getting payments for selected client
+            paymentsViewModel.getPayments(selectedClient);
+        }
+    }
+
     // Load initial customers and clients
     LaunchedEffect(agentId) {
-        viewModel.loadCustomers(agentId)
+        viewModel.loadCustomers(startDate, endDate, agentId)
         viewModel.loadClients(agentId)
     }
 
     // Reload customers when client filter changes
     LaunchedEffect(selectedClient) {
-        viewModel.loadCustomers(agentId, if (selectedClient.isBlank()) null else selectedClient)
+        viewModel.loadCustomers(
+            startDate,
+            endDate,
+            agentId,
+            if (selectedClient.isBlank()) null else selectedClient
+        )
     }
 
     val shouldRefresh = navController.currentBackStackEntry
@@ -84,16 +101,20 @@ fun AgentHomeScreen(
 
     LaunchedEffect(shouldRefresh?.value) {
         if (shouldRefresh?.value == true) {
-            viewModel.loadCustomers(agentId, if (selectedClient.isBlank()) null else selectedClient)
+            viewModel.loadCustomers(
+                startDate,
+                endDate,
+                agentId,
+                if (selectedClient.isBlank()) null else selectedClient
+            )
             navController.currentBackStackEntry?.savedStateHandle?.set("refresh_customers", false)
         }
     }
 
-    Scaffold(modifier = Modifier.fillMaxHeight()
-        .background(Color.White),
-        topBar = {
-
-        },
+    Scaffold(
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(Color.White),
         floatingActionButton = {
             FloatingActionButton(onClick = {
 //                navController.navigate("add_customer")
@@ -117,7 +138,8 @@ fun AgentHomeScreen(
                             FilterChip(
                                 selected = selectedClient == "",
                                 onClick = { selectedClient = "" },
-                                modifier = Modifier.padding(end = 8.dp)
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
                                     .border(BorderStroke(0.dp, Color.Transparent)),
                                 leadingIcon = {
                                     Icon(
@@ -137,18 +159,19 @@ fun AgentHomeScreen(
                         }
                         items(clients) { client ->
                             FilterChip(
-                                selected = selectedClient == client,
-                                onClick = { selectedClient = client },
-                                modifier = Modifier.padding(end = 8.dp)
+                                selected = selectedClient == client.id,
+                                onClick = { selectedClient = client.id },
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
                                     .border(BorderStroke(0.dp, Color.Transparent)),
                                 leadingIcon = {
                                     Icon(
                                         imageVector = Icons.Default.Person,
                                         contentDescription = null,
-                                        tint = if (selectedClient == client) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                        tint = if (selectedClient == client.id) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 },
-                                label = { Text(client) },
+                                label = { Text(client.clientName) },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
@@ -158,19 +181,138 @@ fun AgentHomeScreen(
                             )
                         }
                     }
+                } else {
+                    Text("No clients available", color = MaterialTheme.colorScheme.error)
                 }
             }
+
+//            payment summary card
+            if (!selectedClient.isBlank()) {
+                PaymentsCard(
+                    pending = pending,
+                    received = received,
+                    onViewDetails = {
+                        navigateWithInterstitial("payments_screen/$selectedClient")
+                    }
+                )
+            }
+//            Spacer(modifier = Modifier.height(8.dp))
+
+            DateRangeChipWithReset(
+                startDate = startDate,
+                endDate = endDate,
+                onDateRangeSelected = { firstDate, lastDate ->
+                    startDate = firstDate
+                    endDate = lastDate
+                    viewModel.loadCustomers(
+                        firstDate,
+                        lastDate,
+                        agentId,
+                        if (selectedClient.isBlank()) null else selectedClient
+                    )
+                },
+                onReset = {
+                    startDate = getFirstDayOfCurrentMonth()
+                    endDate = getLastDayOfCurrentMonth()
+                    viewModel.loadCustomers(
+                        startDate,
+                        endDate,
+                        agentId,
+                        if (selectedClient.isBlank()) null else selectedClient
+                    )
+                }
+            )
+
+
+
+//            // Date Filter Row
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(8.dp, 0.dp),
+//                horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text("Filter by Date", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+//
+//                DateRangePickerButton { firstDate, lastDate ->
+//                    Log.e(
+//                        "dateRange: ",
+//                        "AgentHomeScreen: date range selected: $firstDate / $lastDate"
+//                    )
+//                    startDate = firstDate
+//                    endDate = lastDate
+//                    viewModel.loadCustomers(
+//                        firstDate,
+//                        lastDate,
+//                        agentId,
+//                        if (selectedClient.isBlank()) null else selectedClient
+//                    )
+//                }
+//            }
+//
+//            // Show selected date range chip + Clear Filter text
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.padding(8.dp, 0.dp)
+//            ) {
+//                // Date range chip
+//                AssistChip(
+//                    onClick = { /* Optional: open date picker again */ },
+//                    label = {
+//                        Text(
+//                            "${formatMillisToDate(startDate)} - ${formatMillisToDate(endDate)}",
+//                            fontWeight = FontWeight.Bold, fontSize = 8.sp,
+//                        )
+//                    },
+//                    trailingIcon = {
+//                        Icon(
+//                            modifier = Modifier.size(16.dp),
+//                            imageVector = Icons.Default.CalendarMonth,
+//                            contentDescription = "Filter Icon"
+//                        )
+//                    }
+//                )
+//
+//                Spacer(
+//                    modifier = Modifier
+//                        .width(16.dp)
+//                        .weight(1f)
+//                )
+//
+//                // Clear Filter text
+//                Text(
+//                    text = "Reset Filter",
+//                    color = MaterialTheme.colorScheme.primary,
+//                    modifier = Modifier
+//                        .clickable {
+//                            // Reset to current month
+//                            startDate = getFirstDayOfCurrentMonth()
+//                            endDate = getLastDayOfCurrentMonth()
+//
+//                            viewModel.loadCustomers(
+//                                getFirstDayOfCurrentMonth(),
+//                                getLastDayOfCurrentMonth(),
+//                                agentId,
+//                                if (selectedClient.isBlank()) null else selectedClient
+//                            )
+//                        },
+//                )
+//            }
+
             LazyColumn {
                 items(customers, key = { it.id }) { customer ->
                     CustomerCard(
                         customer = customer,
                         onEdit = {
-                            navController.navigate("edit_customer/${customer.id}")
+//                            navController.navigate("edit_customer/${customer.id}")
+                            navigateWithInterstitial("edit_customer/${customer.id}")
                         },
                         onDelete = {
                             viewModel.deleteCustomer(customer.id)
 //                        refresh the list of customers
                             viewModel.loadCustomers(
+                                startDate, endDate,
                                 agentId,
                                 if (selectedClient.isBlank()) null else selectedClient
                             )

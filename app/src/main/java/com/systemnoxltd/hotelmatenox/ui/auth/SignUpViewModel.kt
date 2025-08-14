@@ -1,9 +1,11 @@
-package com.systemnoxltd.hotelmate.ui.auth
+package com.systemnoxltd.hotelmatenox.ui.auth
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.systemnoxltd.hotelmatenox.utils.showAds
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -51,7 +53,7 @@ class SignUpViewModel : ViewModel() {
         val password = _uiState.value.password.trim()
         val confirm = _uiState.value.confirmPassword.trim()
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             onError("Please enter a valid email.")
             return
         }
@@ -94,7 +96,7 @@ class SignUpViewModel : ViewModel() {
                         "name" to name,
                         "email" to email,
                         "phone" to phone,
-                        "showAds" to true
+                        "showAds" to showAds()
                     )
                     FirebaseFirestore.getInstance()
                         .collection("users")

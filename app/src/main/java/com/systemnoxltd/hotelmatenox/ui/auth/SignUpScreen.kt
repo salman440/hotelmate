@@ -48,141 +48,152 @@ fun SignUpScreen(navController: NavHostController, viewModel: SignUpViewModel = 
     var showConfirmPassword by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
-        Image(
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = "App Logo",
-            modifier = Modifier.size(120.dp)
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
+        Text(text = "Sign Up", fontSize = MaterialTheme.typography.headlineLarge.fontSize)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Logo
+            Image(
+                painter = painterResource(id = R.drawable.ic_hotel_mate),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(100.dp)
+            )
 
-        // Full Name Field
-        OutlinedTextField(
-            value = state.fullName,
-            onValueChange = viewModel::onFullNameChanged,
-            label = { Text("Full Name") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        // Email Field
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = viewModel::onEmailChanged,
-            label = { Text("Email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+            // Full Name Field
+            OutlinedTextField(
+                value = state.fullName,
+                onValueChange = viewModel::onFullNameChanged,
+                label = { Text("Full Name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            // Email Field
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = viewModel::onEmailChanged,
+                label = { Text("Email") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        // Phone no Field
-        OutlinedTextField(
-            value = state.phoneNo,
-            onValueChange = viewModel::onPhoneNoChanged,
-            label = { Text("Phone No") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+            // Phone no Field
+            OutlinedTextField(
+                value = state.phoneNo,
+                onValueChange = viewModel::onPhoneNoChanged,
+                label = { Text("Phone No") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-        // Password Field
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = viewModel::onPasswordChanged,
-            label = { Text("Password") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { showPassword = !showPassword }) {
-                    Icon(
-                        imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (showPassword) "Hide password" else "Show password"
-                    )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Password Field
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = viewModel::onPasswordChanged,
+                label = { Text("Password") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (showPassword) "Hide password" else "Show password"
+                        )
+                    }
                 }
-            }
-        )
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Confirm Password Field
-        OutlinedTextField(
-            value = state.confirmPassword,
-            onValueChange = viewModel::onConfirmPasswordChanged,
-            label = { Text("Confirm Password") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
-                    Icon(
-                        imageVector = if (showConfirmPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = if (showConfirmPassword) "Hide password" else "Show password"
-                    )
+            // Confirm Password Field
+            OutlinedTextField(
+                value = state.confirmPassword,
+                onValueChange = viewModel::onConfirmPasswordChanged,
+                label = { Text("Confirm Password") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { showConfirmPassword = !showConfirmPassword }) {
+                        Icon(
+                            imageVector = if (showConfirmPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (showConfirmPassword) "Hide password" else "Show password"
+                        )
+                    }
                 }
-            }
-        )
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Sign Up Button
-        Button(
-            onClick = {
-                viewModel.signUp(
-                    onSuccess = {
+            // Sign Up Button
+            Button(
+                onClick = {
+                    viewModel.signUp(
+                        onSuccess = {
 //                        Toast.makeText(context, "Account created", Toast.LENGTH_SHORT).show()
 //                        navController.navigate("home") {
 //                            popUpTo("signup") { inclusive = true }
 //                        }
 
-                        Toast.makeText(context, "Account created. Verification email sent.", Toast.LENGTH_SHORT).show()
-                        navController.navigate("email_verification") {
-                            popUpTo("signup") { inclusive = true }
+                            Toast.makeText(
+                                context,
+                                "Account created. Verification email sent.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            navController.navigate("email_verification") {
+                                popUpTo("signup") { inclusive = true }
+                            }
+
+                        },
+                        onError = {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                         }
-
-                    },
-                    onError = {
-                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                    }
-                )
-            },
-            enabled = !state.isLoading,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            } else {
-                Text("Sign Up")
+                    )
+                },
+                enabled = !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Text("Sign Up")
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Redirect to Login
-        Row {
-            Text("Already have an account?")
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "Login",
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable {
-                    navController.popBackStack()
+            // Redirect to Login
+            Row {
+                Text("Already have an account?")
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Login",
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        navController.popBackStack()
 //                    navController.navigate("login") {
 //                        popUpTo("signup") { inclusive = true }
 //                    }
-                }
-            )
+                    }
+                )
+            }
         }
     }
 }

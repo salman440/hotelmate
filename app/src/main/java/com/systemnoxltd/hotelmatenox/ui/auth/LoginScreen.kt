@@ -53,140 +53,149 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // App Logo
-        Image(
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = "App Logo",
-            modifier = Modifier.size(120.dp)
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
+        Text(text = "Sign In", fontSize = MaterialTheme.typography.headlineLarge.fontSize)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // App Logo
+            Image(
+                painter = painterResource(id = R.drawable.ic_hotel_mate),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(100.dp)
+            )
 
-        // Email Field
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = viewModel::onEmailChanged,
-            label = { Text("Email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+            // Email Field
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = viewModel::onEmailChanged,
+                label = { Text("Email") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        OutlinedTextField(
-            value = state.password,
-            onValueChange = viewModel::onPasswordChanged,
-            label = { Text("Password") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                val image = if (showPassword)
-                    Icons.Default.Visibility
-                else
-                    Icons.Default.VisibilityOff
+            Spacer(modifier = Modifier.height(12.dp))
 
-                val description = if (showPassword) "Hide password" else "Show password"
+            OutlinedTextField(
+                value = state.password,
+                onValueChange = viewModel::onPasswordChanged,
+                label = { Text("Password") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (showPassword)
+                        Icons.Default.Visibility
+                    else
+                        Icons.Default.VisibilityOff
 
-                IconButton(onClick = { showPassword = !showPassword }) {
-                    Icon(imageVector = image, contentDescription = description)
+                    val description = if (showPassword) "Hide password" else "Show password"
+
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(imageVector = image, contentDescription = description)
+                    }
+                }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Forgot Password
+            Text(
+                text = "Forgot password?",
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable {
+                        // TODO: Navigate to forgot password screen
+                        navController.navigate("forgot_password")
+                    },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Login Button
+            Button(
+                onClick = {
+                    viewModel.login(
+                        onSuccess = {
+                            Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
+                            navController.navigate("agent_home") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
+                        onError = {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                },
+                enabled = !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Text("Login")
                 }
             }
-        )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Forgot Password
-        Text(
-            text = "Forgot password?",
-            modifier = Modifier
-                .align(Alignment.End)
-                .clickable {
-                    // TODO: Navigate to forgot password screen
-                    navController.navigate("forgot_password")
-                },
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Login Button
-        Button(
-            onClick = {
-                viewModel.login(
-                    onSuccess = {
-                        Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-                        navController.navigate("agent_home") // or user-type based
-                    },
-                    onError = {
-                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            // Sign Up Redirect
+            Row {
+                Text("Don't have an account?")
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Sign up",
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        navController.navigate("signup")
                     }
                 )
-            },
-            enabled = !state.isLoading,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-        ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            } else {
-                Text("Login")
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            if (viewModel.showVerifyDialog.value) {
+                AlertDialog(
+                    onDismissRequest = { viewModel.showVerifyDialog.value = false },
+                    title = { Text("Email Not Verified") },
+                    text = { Text("Your email address hasn't been verified yet. Please check your inbox or resend the verification link.") },
+                    confirmButton = {
+                        TextButton(onClick = {
 
-        // Sign Up Redirect
-        Row {
-            Text("Don't have an account?")
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = "Sign up",
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable {
-                    navController.navigate("signup")
-                }
-            )
-        }
-
-        if (viewModel.showVerifyDialog.value) {
-            AlertDialog(
-                onDismissRequest = { viewModel.showVerifyDialog.value = false },
-                title = { Text("Email Not Verified") },
-                text = { Text("Your email address hasn't been verified yet. Please check your inbox or resend the verification link.") },
-                confirmButton = {
-                    TextButton(onClick = {
-
-                        viewModel.sendVerificationEmail(
-                            onSuccess = { message ->
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                            },
-                            onFailure = { error ->
-                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }) {
-                        Text("Resend Email")
+                            viewModel.sendVerificationEmail(
+                                onSuccess = { message ->
+                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                },
+                                onFailure = { error ->
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }) {
+                            Text("Resend Email")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            viewModel.showVerifyDialog.value = false
+                        }) {
+                            Text("Cancel")
+                        }
                     }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        viewModel.showVerifyDialog.value = false
-                    }) {
-                        Text("Cancel")
-                    }
-                }
-            )
-        }
+                )
+            }
 
+        }
     }
 }
 

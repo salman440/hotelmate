@@ -30,15 +30,15 @@ fun PaymentsCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.White),
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
+                .background(Color.White)
                 .padding(16.dp)
+
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

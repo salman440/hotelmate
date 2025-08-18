@@ -37,65 +37,72 @@ fun ForgotPasswordScreen(
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
+        modifier = Modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo
-        Image(
-            painter = painterResource(id = R.drawable.ic_logo),
-            contentDescription = "Logo",
-            modifier = Modifier.size(120.dp)
-        )
-
         Spacer(modifier = Modifier.height(24.dp))
-
-        // Email Input
-        OutlinedTextField(
-            value = state.email,
-            onValueChange = viewModel::onEmailChanged,
-            label = { Text("Enter your email") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Send Reset Button
-        Button(
-            onClick = {
-                viewModel.sendResetLink { message ->
-                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-                }
-            },
-            enabled = !state.isLoading,
+        Text(text = "Forgot Password", fontSize = MaterialTheme.typography.headlineLarge.fontSize)
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
+                .fillMaxSize()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-            } else {
-                Text("Send Reset Link")
+            // Logo
+            Image(
+                painter = painterResource(id = R.drawable.ic_hotel_mate),
+                contentDescription = "Logo",
+                modifier = Modifier.size(100.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Email Input
+            OutlinedTextField(
+                value = state.email,
+                onValueChange = viewModel::onEmailChanged,
+                label = { Text("Enter your email") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Send Reset Button
+            Button(
+                onClick = {
+                    viewModel.sendResetLink { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                },
+                enabled = !state.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                if (state.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Text("Send Reset Link")
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Go back to Login
-        Text(
-            text = "Back to Login",
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable {
-                navController.popBackStack()
+            // Go back to Login
+            Text(
+                text = "Back to Login",
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable {
+                    navController.popBackStack()
 //                navController.navigate("login") {
 ////                    popUpTo("forgot_password") { inclusive = true }
 //                    popUpTo("login") { inclusive = false }
 //                    launchSingleTop = true
 //                }
-            }
-        )
+                }
+            )
+        }
     }
 }

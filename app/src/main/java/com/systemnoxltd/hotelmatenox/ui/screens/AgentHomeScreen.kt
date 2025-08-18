@@ -71,13 +71,6 @@ fun AgentHomeScreen(
     val pending by paymentsViewModel.pendingAmount.collectAsState()
     val received by paymentsViewModel.receivedAmount.collectAsState()
 
-    LaunchedEffect(selectedClient) {
-        if (selectedClient.isNotEmpty()) {
-//            getting payments for selected client
-            paymentsViewModel.getPayments(selectedClient);
-        }
-    }
-
     // Load initial customers and clients
     LaunchedEffect(agentId) {
         viewModel.loadCustomers(startDate, endDate, agentId)
@@ -92,6 +85,11 @@ fun AgentHomeScreen(
             agentId,
             if (selectedClient.isBlank()) null else selectedClient
         )
+
+        //  getting payments for selected client
+        if (selectedClient.isNotEmpty()) {
+            paymentsViewModel.getPayments(selectedClient);
+        }
     }
 
     val shouldRefresh = navController.currentBackStackEntry
@@ -222,83 +220,6 @@ fun AgentHomeScreen(
                     )
                 }
             )
-
-
-
-//            // Date Filter Row
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(8.dp, 0.dp),
-//                horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text("Filter by Date", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-//
-//                DateRangePickerButton { firstDate, lastDate ->
-//                    Log.e(
-//                        "dateRange: ",
-//                        "AgentHomeScreen: date range selected: $firstDate / $lastDate"
-//                    )
-//                    startDate = firstDate
-//                    endDate = lastDate
-//                    viewModel.loadCustomers(
-//                        firstDate,
-//                        lastDate,
-//                        agentId,
-//                        if (selectedClient.isBlank()) null else selectedClient
-//                    )
-//                }
-//            }
-//
-//            // Show selected date range chip + Clear Filter text
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier.padding(8.dp, 0.dp)
-//            ) {
-//                // Date range chip
-//                AssistChip(
-//                    onClick = { /* Optional: open date picker again */ },
-//                    label = {
-//                        Text(
-//                            "${formatMillisToDate(startDate)} - ${formatMillisToDate(endDate)}",
-//                            fontWeight = FontWeight.Bold, fontSize = 8.sp,
-//                        )
-//                    },
-//                    trailingIcon = {
-//                        Icon(
-//                            modifier = Modifier.size(16.dp),
-//                            imageVector = Icons.Default.CalendarMonth,
-//                            contentDescription = "Filter Icon"
-//                        )
-//                    }
-//                )
-//
-//                Spacer(
-//                    modifier = Modifier
-//                        .width(16.dp)
-//                        .weight(1f)
-//                )
-//
-//                // Clear Filter text
-//                Text(
-//                    text = "Reset Filter",
-//                    color = MaterialTheme.colorScheme.primary,
-//                    modifier = Modifier
-//                        .clickable {
-//                            // Reset to current month
-//                            startDate = getFirstDayOfCurrentMonth()
-//                            endDate = getLastDayOfCurrentMonth()
-//
-//                            viewModel.loadCustomers(
-//                                getFirstDayOfCurrentMonth(),
-//                                getLastDayOfCurrentMonth(),
-//                                agentId,
-//                                if (selectedClient.isBlank()) null else selectedClient
-//                            )
-//                        },
-//                )
-//            }
 
             LazyColumn {
                 items(customers, key = { it.id }) { customer ->

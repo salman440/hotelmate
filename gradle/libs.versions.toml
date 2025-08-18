@@ -17,6 +17,8 @@ googleGmsGoogleServices = "4.4.3"
 #firebaseFirestore = "24.11.1"
 firebaseBom = "33.0.0"
 playServicesAds = "24.5.0"
+poi = "5.2.3"
+poiOoxml = "5.2.3"
 runtimeLivedata = "1.8.3"
 
 [libraries]
@@ -51,6 +53,8 @@ firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx"
 androidx-material = { group = "androidx.compose.material", name = "material" }
 androidx-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+poi = { module = "org.apache.poi:poi", version.ref = "poi" }
+poi-ooxml = { module = "org.apache.poi:poi-ooxml", version.ref = "poiOoxml" }
 
 
 

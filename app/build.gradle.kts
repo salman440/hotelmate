@@ -11,10 +11,10 @@ android {
 
     defaultConfig {
         applicationId = "com.systemnoxltd.hotelmatenox"
-        minSdk = 24
+        minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -84,6 +84,9 @@ dependencies {
     implementation(libs.play.services.ads)
 
     implementation(libs.material)
+
+    implementation(libs.poi)
+    implementation(libs.poi.ooxml)
 
 
 }

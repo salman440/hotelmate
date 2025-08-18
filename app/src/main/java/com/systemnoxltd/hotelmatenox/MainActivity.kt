@@ -1,6 +1,7 @@
 package com.systemnoxltd.hotelmatenox
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowInsetsController
@@ -55,6 +56,10 @@ import com.systemnoxltd.hotelmatenox.ui.components.BannerAdView
 import com.systemnoxltd.hotelmatenox.ui.theme.HotelMateNoxTheme
 import com.systemnoxltd.hotelmatenox.viewmodel.AdsViewModel
 import kotlinx.coroutines.flow.collectLatest
+import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.systemnoxltd.hotelmatenox.ui.permissions.RequestNotificationsOnStart
+import com.systemnoxltd.hotelmatenox.viewmodel.NotificationViewModel
 
 //class MainActivity : ComponentActivity() {
 class MainActivity : AppCompatActivity() {
@@ -89,6 +94,10 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             HotelMateNoxTheme {
+
+                val notificationVM: NotificationViewModel = viewModel()
+                RequestNotificationsOnStart(notificationVM = notificationVM, askOnStart = true)
+
                 val navController = rememberNavController()
 
                 val statusBarColor = MaterialTheme.colorScheme.primary
@@ -262,6 +271,18 @@ class MainActivity : AppCompatActivity() {
                                                 onClick = {
                                                     menuExpanded = false
                                                     openPlayStore(context)
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Privacy Policy") },
+                                                onClick = {
+                                                    menuExpanded = false
+                                                    val url = getString(R.string.privacy_policy)
+                                                    val intent = Intent(
+                                                        Intent.ACTION_VIEW,
+                                                        url.toUri()
+                                                    )
+                                                    context.startActivity(intent)
                                                 }
                                             )
                                             DropdownMenuItem(

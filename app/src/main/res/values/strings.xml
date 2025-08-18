@@ -1,8 +1,12 @@
 <resources>
-    <string name="app_name">HotelMateNox</string>
+    <string name="app_name">Hotel Mate</string>
+    <string name="privacy_policy">https://salman440.github.io/hotelmate_privacy/index.html</string>
+
+
 <!--    test ads ids -->
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="app_open_ad_unit_id">ca-app-pub-3940256099942544/3419835294</string>
+<!--    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>-->
+    <!--    Production ads ids -->
+    <string name="admob_app_id">ca-app-pub-3471264416063007~9464308850</string>
+
 
 </resources>

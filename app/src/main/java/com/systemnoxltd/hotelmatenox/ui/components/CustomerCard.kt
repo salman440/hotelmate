@@ -48,8 +48,7 @@ fun CustomerCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
-            .background(Color.White),
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(6.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
